@@ -8,17 +8,30 @@
       "when": ["editorFocus"],
       "commands": [":nohl"], // Clears highlight of current search
       "silent": true
-    }
+    }, {
+    "before": ["s"],
+    "commands": ["flash-vscode.start"]
+  },
+  {
+    "before": ["S"],
+    "commands": ["flash-vscode.startSelection"]
+  }, 
+  {
+    "before": [ "<BS>" ],
+    "commands": [ "flash-vscode.backspace" ]
+  },
   ],
   "vim.handleKeys": {
     "<C-a>": false,
     "<C-f>": false
-  },
-  "editor.fontFamily": "JetBrainsMono Nerd Font",
+  }, 
+  "window.customTitleBarVisibility": "never",
+  "editor.fontFamily": "JetBrainsMono Nerd Font Mono",
+  "editor.fontSize": 16,
   "workbench.iconTheme": "material-icon-theme",
   "editor.minimap.enabled": false,
   "workbench.tips.enabled": false,
-  "workbench.startupEditor": "welcomePageInEmptyWorkbench",
+  "workbench.startupEditor": "newUntitledFile",
   "window.restoreWindows": "all",
   "breadcrumbs.enabled": false,
   "vim.incsearch": true,
@@ -31,7 +44,6 @@
   "vim.easymotion": true,
   // choose what you like! I like tabs
   "workbench.editor.showTabs": "none",
-  "workbench.editor.titleBar": "hidden",
   // if you opt for tabs :)
   "window.density.editorTabHeight": "compact",
   // vscodevim settings
@@ -72,8 +84,10 @@
   "zenMode.showTabs": "none",
   "window.commandCenter": false,
   "workbench.editor.editorActionsLocation": "hidden",
-  "currentFilePath.defaultPathStartsFrom": "rootDirectory",
-  "currentFilePath.defaultPathStyle": "unix",
-  "currentFilePath.priorityInStatusBar": 0,
-  "filePathBar.pathStyle": "relative"
+  "filePathBar.pathStyle": "relative",
+  "workbench.colorTheme": "Gruvbox Dark Hard",
+  "workbench.sideBar.location": "right",
+  "editor.stickyScroll.enabled": false,
+  "explorer.compactFolders": false,
+  "workbench.activityBar.location": "hidden"
 }

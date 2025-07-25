@@ -49,12 +49,12 @@
     "command": "workbench.action.toggleSidebarVisibility"
   },
   {
-    "key": "s h",
+    "key": "space w v",
     "command": "workbench.action.splitEditor",
     "when": "vim.mode == 'Normal' && (editorTextFocus || !inputFocus)"
   },
   {
-    "key": "s v",
+    "key": "space w s",
     "command": "workbench.action.splitEditorDown",
     "when": "vim.mode == 'Normal' && (editorTextFocus || !inputFocus)"
   },
@@ -249,11 +249,56 @@
   {
     "key": "space x x",
     "command": "workbench.actions.view.problems",
-    "when": "editorTextFocus"
+    "when": "vim.mode == 'Normal' && (editorTextFocus || !inputFocus)"
   },
+  // Close the entire bottom panel with Escape
   {
     "key": "escape",
     "command": "workbench.action.closePanel",
-    "when": "panelFocus"
+    "when": "panelFocus && vim.mode == 'Normal'"
+  },
+  {
+    "key": "q",
+    "command": "workbench.action.closeSidebar",
+    "when": "sideBarFocus && activeViewlet == 'workbench.view.explorer'"
+  },
+  {
+    "key": "space c f",
+    "command": "editor.action.formatDocument",
+    "when": "editorTextFocus && !editorHasSelection"
+  },
+  {
+    "key": "space c f",
+    "command": "editor.action.formatSelection",
+    "when": "editorTextFocus && editorHasSelection"
+  },
+  {
+    "key": "ctrl+n",
+    "command": "list.focusDown",
+    "when": "(listFocus || inQuickOpen) && vim.mode == 'Normal'"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "list.focusUp",
+    "when": "(listFocus || inQuickOpen) && vim.mode == 'Normal'"
+  },
+  {
+    "key": "ctrl+n",
+    "command": "workbench.action.quickOpenSelectNext",
+    "when": "inQuickOpen && vim.mode == 'Normal'"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inQuickOpen && vim.mode == 'Normal'"
+  },
+  {
+    "key": "ctrl+k ctrl+w",
+    "command": "workbench.action.closeAllEditors"
+  },
+  {
+    "key": "ctrl+k ctrl+x",
+    "command": "workbench.action.closeEditorsInOtherGroups",
+    "when": "editorFocus"
   }
 ]
