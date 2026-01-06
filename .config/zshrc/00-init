@@ -9,3 +9,8 @@ export EDITOR=nvim
 export ZSH="$HOME/.oh-my-zsh"
 export PATH=$PATH:~/.cargo/bin/
 export PATH=$PATH:~/.local/bin/
+
+# Set distrobox name from CONTAINER_ID if in distrobox
+if [ -n "$CONTAINER_ID" ]; then
+    export DISTROBOX_NAME="$CONTAINER_ID"
+fi

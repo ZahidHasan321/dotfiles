@@ -46,4 +46,10 @@ alias ascii='~/.config/ml4w/scripts/figlet.sh'
 # System
 # -----------------------------------------------------
 alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+
+
+# -----------------------------------------------------
+# Custom
+# -----------------------------------------------------
 alias fdev='distrobox enter fedora-dev'
+alias cddev='cd /mnt/339cc06e-972e-45cf-aed0-2b21bc4f4d69/dev/'

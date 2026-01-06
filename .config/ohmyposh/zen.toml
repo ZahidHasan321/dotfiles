@@ -19,7 +19,7 @@ final_space = true
 
   [[blocks.segments]]
     template = '{{ .Path }}'
-    foreground = 'blue'
+    foreground = 'cyan'
     background = 'transparent'
     type = 'path'
     style = 'plain'
@@ -27,10 +27,21 @@ final_space = true
     [blocks.segments.properties]
       cache_duration = 'none'
       style = 'full'
+      mapped_locations = { "/mnt/339cc06e-972e-45cf-aed0-2b21bc4f4d69" = "" }
 
   [[blocks.segments]]
-    template = ' {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
-    foreground = 'p:grey'
+    template = '{{ if .Env.IN_DISTROBOX }} <cyan>[distrobox:{{ .Env.DISTROBOX_NAME }}]</>{{ end }}'
+    foreground = 'cyan'
+    background = 'transparent'
+    type = 'text'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
+
+  [[blocks.segments]]
+    template = ' <#a6e3a1></> {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}<yellow>*</>{{ end }}{{ if gt .Behind 0 }}<magenta> ⇣</>{{ end }}{{ if gt .Ahead 0 }}<magenta> ⇡</>{{ end }}'
+    foreground = '#a6e3a1'
     background = 'transparent'
     type = 'git'
     style = 'plain'
@@ -40,6 +51,16 @@ final_space = true
       cache_duration = 'none'
       commit_icon = '@'
       fetch_status = true
+
+  [[blocks.segments]]
+    template = '{{ if .Env.VIRTUAL_ENV }} <yellow>({{ .Env.VIRTUAL_ENV | base }})</yellow>{{ end }}'
+    foreground = 'yellow'
+    background = 'transparent'
+    type = 'text'
+    style = 'plain'
+
+    [blocks.segments.properties]
+      cache_duration = 'none'
 
 [[blocks]]
   type = 'rprompt'

@@ -1,0 +1,9 @@
+# Development Environment Configuration
+# This file stores the cache partition path for development tools
+#
+# This partition is used for:
+# - UV cache (Python packages)
+# - PNPM store (Node packages)
+# - Other development caches
+
+DEV_CACHE_PARTITION="/mnt/339cc06e-972e-45cf-aed0-2b21bc4f4d69"

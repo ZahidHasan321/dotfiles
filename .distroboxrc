@@ -1,0 +1,195 @@
+#!/bin/bash
+# -----------------------------------------------------
+# Distrobox Configuration
+# -----------------------------------------------------
+# This file runs when creating a new distrobox container
+# It sets up the development environment with:
+# - zsh with oh-my-zsh and plugins
+# - uv (Python package manager)
+# - pnpm (Node package manager)
+# - Symlinks to shared dotfiles from host
+
+# Stop script on error during critical setup phases (optional, safer to handle manually)
+# set -e
+
+# -----------------------------------------------------
+# Configuration & Paths
+# -----------------------------------------------------
+DOTFILES_DIR="$HOME/dotfiles"
+DEV_CONFIG_DIR="$DOTFILES_DIR/.config/dev-env"
+DEV_CONFIG_FILE="$DEV_CONFIG_DIR/config"
+
+# -----------------------------------------------------
+# Configure cache partition
+# -----------------------------------------------------
+
+# Check if config exists, if not prompt user
+if [ ! -f "$DEV_CONFIG_FILE" ]; then
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "  Development Environment Setup"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "Where should development caches be stored?"
+  echo "This will be used for:"
+  echo "  - UV cache (Python packages)"
+  echo "  - PNPM store (Node packages)"
+  echo "  - Other development tool caches"
+  echo ""
+  echo "Available partitions:"
+  df -hP | grep -E '^/dev' | grep -v '/boot' | awk '{print "  " $1 " - " $6 " (" $4 " free)"}'
+  echo ""
+  read -p "Enter partition mount path (e.g., /mnt/data): " cache_partition
+
+  # Validate partition exists
+  if [ ! -d "$cache_partition" ]; then
+    echo "ERROR: Directory '$cache_partition' does not exist inside this container!"
+    echo "Falling back to HOME directory (not recommended for space saving)"
+    cache_partition="$HOME"
+  else
+    echo "✓ Verified partition access."
+  fi
+
+  # Create config directory and file
+  mkdir -p "$DEV_CONFIG_DIR"
+
+  cat >"$DEV_CONFIG_FILE" <<EOF
+# Development Environment Configuration
+# This file stores the cache partition path for development tools
+DEV_CACHE_PARTITION="$cache_partition"
+EOF
+  echo "✓ Configuration saved to $DEV_CONFIG_FILE"
+  echo ""
+fi
+
+# Load configuration
+source "$DEV_CONFIG_FILE"
+
+# -----------------------------------------------------
+# Install System Packages
+# -----------------------------------------------------
+# Set verbose mode if we're doing initial setup
+if ! command -v zsh &>/dev/null; then
+  VERBOSE_SETUP=1
+  echo "Installing zsh and dependencies..."
+  # Note: Ensure sudo is available and dnf is the correct package manager for your image
+  sudo dnf install -y zsh fzf git util-linux-user fastfetch cargo
+fi
+
+# Install eza via cargo if not already installed
+if ! command -v eza &>/dev/null; then
+  echo "Installing eza via cargo..."
+  cargo install eza
+fi
+
+# -----------------------------------------------------
+# Install Shell Tools (Oh-My-Zsh & Plugins)
+# -----------------------------------------------------
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  echo "Installing oh-my-zsh..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
+
+# Define custom plugin directory
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
+  echo "Installing zsh-autosuggestions..."
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+fi
+
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+  echo "Installing zsh-syntax-highlighting..."
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+fi
+
+# -----------------------------------------------------
+# Install Package Managers
+# -----------------------------------------------------
+
+# Install uv (Python)
+if ! command -v uv &>/dev/null; then
+  echo "Installing uv..."
+  mkdir -p "$HOME/.local/bin"
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+
+# Install pnpm (Node)
+if ! command -v pnpm &>/dev/null; then
+  echo "Installing pnpm..."
+  # Prepare directory to avoid permission issues
+  mkdir -p "$HOME/.local/share/pnpm"
+  curl -fsSL https://get.pnpm.io/install.sh | sh -
+fi
+
+# -----------------------------------------------------
+# Symlink Dotfiles
+# -----------------------------------------------------
+# Use $DOTFILES_DIR (which is $HOME/dotfiles) to ensure links are valid
+# regardless of how the container views the host filesystem.
+
+# Helper function to link files
+link_file() {
+  local src="$1"
+  local dest="$2"
+
+  if [ -f "$src" ] || [ -d "$src" ]; then
+    if [ ! -L "$dest" ]; then
+      # Only print during initial setup (when packages are being installed)
+      if [ -n "$VERBOSE_SETUP" ]; then
+        echo "Symlinking $dest..."
+      fi
+      mkdir -p "$(dirname "$dest")"
+      ln -sf "$src" "$dest"
+    fi
+  else
+    echo "Warning: Source file $src not found. Skipping."
+  fi
+}
+
+link_file "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+link_file "$DOTFILES_DIR/.config/zshrc" "$HOME/.config/zshrc"
+link_file "$DOTFILES_DIR/.config/ohmyposh" "$HOME/.config/ohmyposh"
+link_file "$DOTFILES_DIR/.local/bin/env" "$HOME/.local/bin/env"
+
+# -----------------------------------------------------
+# Final Configurations
+# -----------------------------------------------------
+
+# Create .pnpmrc with configured cache partition
+if [ ! -f "$HOME/.pnpmrc" ]; then
+  echo "Creating .pnpmrc with cache partition: $DEV_CACHE_PARTITION..."
+  cat >"$HOME/.pnpmrc" <<EOF
+# pnpm configuration for distrobox
+# Auto-generated by .distroboxrc
+store-dir=$DEV_CACHE_PARTITION/.pnpm-store
+global-bin-dir=${HOME}/.local/bin
+EOF
+elif ! grep -q "$DEV_CACHE_PARTITION" "$HOME/.pnpmrc" 2>/dev/null; then
+  echo "Updating .pnpmrc with new cache partition: $DEV_CACHE_PARTITION..."
+  sed -i "s|store-dir=.*|store-dir=$DEV_CACHE_PARTITION/.pnpm-store|" "$HOME/.pnpmrc"
+fi
+
+# Change default shell to zsh
+if [ "$SHELL" != "$(which zsh)" ]; then
+  echo "Setting zsh as default shell..."
+  # Use sudo if required, handle errors gracefully
+  sudo chsh -s "$(which zsh)" "$USER" 2>/dev/null || true
+fi
+
+# Set environment variables
+export IN_DISTROBOX=1
+
+# Determine Distrobox Name
+if [ -n "$CONTAINER_ID" ]; then
+  export DISTROBOX_NAME="$CONTAINER_ID"
+elif command -v distrobox-export &>/dev/null; then
+  # Use awk as a fallback if grep -P is not available
+  export DISTROBOX_NAME="$(grep -oP '(?<=name=)[^;]+' /run/.containerenv 2>/dev/null || awk -F'[=;]' '/name=/ {print $2}' /run/.containerenv 2>/dev/null || echo 'distrobox')"
+else
+  export DISTROBOX_NAME="distrobox"
+fi
+
+# Only show completion message during initial setup
+if [ -n "$VERBOSE_SETUP" ]; then
+  echo "✓ Distrobox setup complete."
+fi
