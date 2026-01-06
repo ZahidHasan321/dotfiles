@@ -36,4 +36,3 @@ include colors-matugen.conf
 # Create the file custom.conf in ~/.config/kitty to overwrite the default configuration
 include ./custom.conf
 
-map shift+enter send_text all \e\r
