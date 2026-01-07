@@ -1,0 +1,33 @@
+# -----------------------------------------------------
+# DEV TOOLS (Distrobox only)
+# -----------------------------------------------------
+# This ensures pnpm, uv, and other dev tools are only
+# available inside distrobox, keeping the host clean.
+
+# Check if we're inside distrobox
+_in_distrobox() {
+    [ -f /run/.containerenv ] || [ -f /run/host/etc/hostname ]
+}
+
+if _in_distrobox; then
+    # Load dev cache partition config
+    DEV_CONFIG_FILE="$HOME/dotfiles/.config/dev-env/config"
+    [ -f "$DEV_CONFIG_FILE" ] && source "$DEV_CONFIG_FILE"
+
+    # pnpm setup
+    export PNPM_HOME="$HOME/.local/share/pnpm"
+    case ":$PATH:" in
+        *":$PNPM_HOME:"*) ;;
+        *) export PATH="$PNPM_HOME:$PATH" ;;
+    esac
+
+    # UV cache directory - use configured partition
+    if [ -n "$DEV_CACHE_PARTITION" ]; then
+        export UV_CACHE_DIR="$DEV_CACHE_PARTITION/.uv_cache"
+    fi
+else
+    # Host system - dev tools are exported from distrobox via:
+    # ~/dotfiles/scripts/setup-distrobox-exports.sh
+    # No wrapper functions needed - distrobox-export handles it.
+    :
+fi

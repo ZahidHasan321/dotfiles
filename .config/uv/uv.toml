@@ -1,0 +1,8 @@
+# UV Configuration
+# https://docs.astral.sh/uv/configuration/
+
+# Cache on the same partition as code to enable hard links
+cache-dir = "/mnt/339cc06e-972e-45cf-aed0-2b21bc4f4d69/.uv_cache"
+
+# Fallback to symlinks if hard links fail (cross-device)
+link-mode = "symlink"

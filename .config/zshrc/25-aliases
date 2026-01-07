@@ -53,6 +53,8 @@ alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 # -----------------------------------------------------
 alias fdev='distrobox enter fedora-dev'
 alias cddev='cd /mnt/339cc06e-972e-45cf-aed0-2b21bc4f4d69/dev/'
+alias cddot='cd ~/dotfiles/'
+alias cdnvim='cd ~/dotfiles/.config/nvim'
 alias gita='git add'
 alias gitc='git commit -m'
 alias gitca='git add . && git commit -m'
