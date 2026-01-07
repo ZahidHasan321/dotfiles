@@ -21,9 +21,10 @@ if _in_distrobox; then
         *) export PATH="$PNPM_HOME:$PATH" ;;
     esac
 
-    # UV cache directory - use configured partition
+    # Cache directories - use configured partition for faster I/O
     if [ -n "$DEV_CACHE_PARTITION" ]; then
         export UV_CACHE_DIR="$DEV_CACHE_PARTITION/.uv_cache"
+        export PNPM_STORE_DIR="$DEV_CACHE_PARTITION/.pnpm-store"
     fi
 else
     # Host system - dev tools are exported from distrobox via:

@@ -1,0 +1,6 @@
+# -----------------------------------------------------
+# Machine-specific environment variables
+# -----------------------------------------------------
+# Copy this to ~/.zshenv and set your dev partition path
+# Example: /mnt/data or /mnt/339cc06e-972e-45cf-aed0-2b21bc4f4d69
+export DEV_PARTITION="/mnt/YOUR_PARTITION"

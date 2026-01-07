@@ -27,7 +27,7 @@ final_space = true
     [blocks.segments.properties]
       cache_duration = 'none'
       style = 'full'
-      mapped_locations = { "/mnt/339cc06e-972e-45cf-aed0-2b21bc4f4d69" = "" }
+      # mapped_locations configured per-machine in ~/.config/ohmyposh/local.toml
 
   [[blocks.segments]]
     template = '{{ if .Env.IN_DISTROBOX }} <#313244,#89b4fa> 󰏗 </><#89b4fa,#45475a> {{ .Env.DISTROBOX_NAME }} </><#45475a,transparent></>{{ end }}'
