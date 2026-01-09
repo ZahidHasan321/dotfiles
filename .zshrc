@@ -18,3 +18,6 @@ fi
 
 # Dev tools (pnpm, uv, etc.) are configured in ~/.config/zshrc/15-dev-tools
 # They are only available inside distrobox to keep the host clean
+
+# opencode
+export PATH=/home/zahid/.opencode/bin:$PATH
