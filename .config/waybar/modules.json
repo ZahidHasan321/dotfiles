@@ -218,7 +218,7 @@
   },
   // Clock
   "clock": {
-    "format": "{:%H:%M %a}",
+    "format": "{:%I:%M %p %a}",
     "on-click": "flatpak run com.ml4w.calendar",
     "timezone": "",
     "tooltip": false

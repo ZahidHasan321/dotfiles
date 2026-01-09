@@ -52,6 +52,25 @@ alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 # Custom
 # -----------------------------------------------------
 alias fdev='distrobox enter fedora-dev'
+
+# Distrobox export helpers (run inside distrobox)
+# Usage: dexport /usr/bin/uv
+#        dunexport /usr/bin/uv
+dexport() {
+  if [ -z "$CONTAINER_ID" ]; then
+    echo "Error: Run this inside a distrobox"
+    return 1
+  fi
+  distrobox-export --bin "$1" --export-path ~/.local/bin
+}
+
+dunexport() {
+  if [ -z "$CONTAINER_ID" ]; then
+    echo "Error: Run this inside a distrobox"
+    return 1
+  fi
+  distrobox-export --delete --bin "$1" --export-path ~/.local/bin
+}
 alias cddev='cd "$DEV_PARTITION/dev/"'
 alias cddot='cd ~/dotfiles/'
 alias cdnvim='cd ~/dotfiles/.config/nvim'

@@ -18,11 +18,3 @@ fi
 
 # Dev tools (pnpm, uv, etc.) are configured in ~/.config/zshrc/15-dev-tools
 # They are only available inside distrobox to keep the host clean
-
-# pnpm
-export PNPM_HOME="/home/zahid/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
